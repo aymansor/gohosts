@@ -34,7 +34,7 @@ go get github.com/aymansor/gohosts
 Import the GoHosts package in your Golang code:
 
 ```go
-import "github.com/aymansor/gohosts/pkg/hosts"
+import gohosts "github.com/aymansor/gohosts"
 ```
 
 ### Adding a Host Entry
