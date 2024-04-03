@@ -30,7 +30,7 @@ func TestCreateBackup(t *testing.T) {
 
 	// Check if the backup file exists
 	backupLocation := getBackupLocation(tempFile.Name())
-	if !fileExists(backupLocation) {
+	if !isValidPath(backupLocation) {
 		t.Error("backup file not found")
 	}
 }

@@ -28,7 +28,7 @@ func CreateBackup() error {
 func CreateBackupFromLocation(path string) error {
 	backupLocation := getBackupLocation(path)
 
-	if !fileExists(backupLocation) {
+	if !isValidPath(backupLocation) {
 		err := copyFile(path, backupLocation)
 		if err != nil {
 			return fmt.Errorf("failed to create backup: %v", err)
@@ -61,7 +61,7 @@ func RestoreBackup() error {
 func RestoreBackupFromLocation(path string) error {
 	backupLocation := getBackupLocation(path)
 
-	if !fileExists(backupLocation) {
+	if !isValidPath(backupLocation) {
 		return fmt.Errorf("backup file not found")
 	}
 

@@ -23,7 +23,7 @@ func TestParseHostsFile(t *testing.T) {
 			{IP: net.ParseIP("192.168.0.1"), Hostnames: []string{"example.com", "example"}, Comment: "Comment"},
 		}
 
-		entries, err := parseHostsFile(input)
+		entries, err := parseLines(input)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -45,7 +45,7 @@ func TestParseHostsFile(t *testing.T) {
 			{IP: net.ParseIP("::1"), Hostnames: []string{"localhost"}},
 			{IP: net.ParseIP("192.168.0.1"), Hostnames: []string{"example.com", "valid-hostname"}},
 		}
-		entries, err := parseHostsFile(input)
+		entries, err := parseLines(input)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -67,7 +67,7 @@ func TestParseHostsFile(t *testing.T) {
 				{IP: net.ParseIP("192.168.0.1"), Hostnames: []string{}},
 				{IP: net.ParseIP("127.0.0.1"), Hostnames: []string{}},
 			}
-			entries, err := parseHostsFile(input)
+			entries, err := parseLines(input)
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
@@ -83,7 +83,7 @@ func TestParseHostsFile(t *testing.T) {
 			"127.0.0.1",
 		}
 
-		entry, err := parseHostsFile(input)
+		entry, err := parseLines(input)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -99,7 +99,7 @@ func TestParseHostsFile(t *testing.T) {
 			"234534 example.com",
 		}
 
-		entries, err := parseHostsFile(input)
+		entries, err := parseLines(input)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -113,7 +113,7 @@ func TestParseHostsFile(t *testing.T) {
 	t.Run("Empty file", func(t *testing.T) {
 		input := []string{}
 
-		entries, err := parseHostsFile(input)
+		entries, err := parseLines(input)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}

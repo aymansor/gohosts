@@ -1,22 +1,34 @@
 package hosts
 
 import (
+	"bufio"
+	"fmt"
 	"net"
-	"regexp"
+	"os"
 	"strings"
 )
 
-// HostEntry represents a single entry in a hosts file.
-type HostEntry struct {
-	IP        net.IP
-	Hostnames []string
-	Comment   string
+func (h *HostsFile) readLines() ([]string, error) {
+	file, err := os.Open(h.path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return lines, nil
 }
 
-// parseHostsFile takes a slice of strings representing the lines of a hosts file
-// and parses each line into a HostEntry. It returns a slice of HostEntry.
-// It ignores empty lines and lines starting with a "#" (comments).
-func parseHostsFile(lines []string) ([]HostEntry, error) {
+func parseLines(lines []string) ([]HostEntry, error) {
 	var entries []HostEntry
 
 	for _, line := range lines {
@@ -61,19 +73,27 @@ func parseHostsFile(lines []string) ([]HostEntry, error) {
 	return entries, nil
 }
 
-func isValidHostname(hostname string) bool {
-	if len(hostname) == 0 || len(hostname) > 255 {
-		return false
+// parseHostEntry parses a single line from the hosts file and returns a HostEntry.
+func parseHostEntry(line string) (HostEntry, error) {
+	fields := strings.Fields(line)
+	if len(fields) < 2 {
+		return HostEntry{}, fmt.Errorf("invalid host entry: %s", line)
 	}
 
-	for _, label := range strings.Split(hostname, ".") {
-		if len(label) == 0 || len(label) > 63 {
-			return false
-		}
-		if !regexp.MustCompile(`^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$`).MatchString(label) {
-			return false
-		}
+	ip := net.ParseIP(fields[0])
+	if ip == nil {
+		return HostEntry{}, fmt.Errorf("invalid IP address: %s", fields[0])
 	}
 
-	return true
+	var hostnames []string
+	var comment string
+	for i := 1; i < len(fields); i++ {
+		if strings.HasPrefix(fields[i], "#") {
+			comment = strings.TrimSpace(strings.Join(fields[i:], " "))
+			break
+		}
+		hostnames = append(hostnames, fields[i])
+	}
+
+	return HostEntry{IP: ip, Hostnames: hostnames, Comment: comment}, nil
 }
