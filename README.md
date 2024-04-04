@@ -13,13 +13,13 @@ GoHosts is a Golang library for parsing and managing hosts files.
 ## To-Do List
 - [ ] Write more unit tests to cover more cases (improve tests)
 - [ ] Add proper error handling and improve input validation.
-- [ ] Improve the API to make it easy to use.
+- [x] Improve the API to make it easy to use.
 - [ ] Document common use cases and finish the examples in the README.
 - [ ] Add documentation.
 - [ ] Add support to disallow duplicate entries in the hosts file.
-- [ ] Fix the issue where a new entry isn't added on a new line if the last line doesn't end with a newline
+- [x] Fix the issue where a new entry isn't added on a new line if the last line doesn't end with a newline
 - [ ] Add examples demonstrating how to use the library.
-- [ ] Add an option to enable/disable an entry.
+- [x] Add an option to enable/disable an entry.
 
 ## Installation
 
