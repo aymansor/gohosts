@@ -2,7 +2,6 @@ package gohosts
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"regexp"
 	"runtime"
@@ -46,26 +45,6 @@ func isValidHostname(hostname string) bool {
 	}
 
 	return true
-}
-
-func copyFile(src, dst string) error {
-	srcFile, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer srcFile.Close()
-
-	dstFile, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer dstFile.Close()
-
-	_, err = io.Copy(dstFile, srcFile)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func contains(slice []string, items ...string) bool {

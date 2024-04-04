@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 )
 
 type HostEntry struct {
@@ -67,8 +66,8 @@ func (h *HostsFile) Load() error {
 }
 
 func (h *HostsFile) Save() error {
-	backup := fmt.Sprintf("%s_%s_%s.bak", h.path, "gohosts", time.Now().Format("20060102150405"))
-	err := copyFile(h.path, backup)
+	// Before doing anything, create a backup of the hosts file
+	err := h.CreateBackup()
 	if err != nil {
 		return fmt.Errorf("failed to create backup: %v", err)
 	}
