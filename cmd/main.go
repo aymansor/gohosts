@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 
-	hosts "github.com/aymansor/gohosts"
+	"github.com/aymansor/gohosts"
 )
 
 func main() {
-	h, err := hosts.New(hosts.WithPath("test"))
+	h, err := gohosts.New(gohosts.WithPath("test"))
 	if err != nil {
 		fmt.Println(err)
 		return
