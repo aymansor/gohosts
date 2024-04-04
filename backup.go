@@ -2,9 +2,9 @@ package hosts
 
 import (
 	"fmt"
-	"io"
-	"os"
 )
+
+// TODO:
 
 // CreateBackup creates a backup of the os hosts file. It returns an error
 // if the hosts file location cannot be determined, or if the backup file
@@ -76,28 +76,4 @@ func RestoreBackupFromLocation(path string) error {
 // getBackupLocation returns the path of the backup file for the given hosts file location.
 func getBackupLocation(hostsFileLocation string) string {
 	return hostsFileLocation + ".bak"
-}
-
-// copyFile copies the source file to the destination file.
-// It returns an error if the source file cannot be opened, the destination file
-// cannot be created, or if the source file cannot be copied to the destination file.
-func copyFile(src, dst string) error {
-	sourceFile, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer sourceFile.Close()
-
-	destinationFile, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer destinationFile.Close()
-
-	_, err = io.Copy(destinationFile, sourceFile)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

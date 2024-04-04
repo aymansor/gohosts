@@ -1,0 +1,66 @@
+# Additional Comments
+#
+# This is an additional comment
+# Another additional comment
+#
+# And one more
+# Blank Lines
+
+
+# Basic Functionality
+
+192.168.0.1    example.com # Valid Entries
+10.0.0.1       test.com
+
+
+192.168.0.2    host1.com host2.com host3.com # Multiple Hostnames
+
+
+  192.168.0.3    whitespace.com      # Leading and Trailing Whitespace
+  
+192.168.0.4    inlinecomment.com   # This is an inline comment
+
+
+192.168.0.5    mixedwhitespace.com # Mixed Whitespace
+192.168.0.6	mixedwhitespace2.com
+
+
+999.999.999.999    invalidip.com # Error Handling
+abcd               invalidip2.com  # Invalid IP Addresses
+
+
+192.168.0.7 # Missing Hostname
+
+
+missingip.com # Missing IP Address
+
+
+192.168.0.8!    extraneouschar.com # Extraneous Characters
+192.168.0.9$    extraneouschar2.com
+
+
+
+192.168.0.10    ipv4address.com # IPv4 Addresses
+
+
+2001:0db8:85a3:0000:0000:8a2e:0370:7334    ipv6address.com # IPv6 Addresses
+
+
+127.0.0.1       localhost # Localhost Entries
+::1             localhost
+
+
+192.168.0.11    domainname.com # Domain Names
+
+
+192.168.0.13    *.wildcard.com # Wildcard Entries
+
+
+192.168.0.15    café.com # Non-ASCII Characters
+
+
+192.168.0.16    escapechar.com # Escape Characters
+
+
+# 127.0.0.1   commentedentry.com
+# 127.0.0.1   commentedentry.com  # This is a commented entry with an inline comment

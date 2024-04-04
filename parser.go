@@ -2,13 +2,12 @@ package hosts
 
 import (
 	"bufio"
-	"fmt"
 	"net"
 	"os"
 	"strings"
 )
 
-func (h *HostsFile) readLines() ([]string, error) {
+func (h *HostsFile) readHosts() ([]string, error) {
 	file, err := os.Open(h.path)
 	if err != nil {
 		return nil, err
@@ -28,72 +27,67 @@ func (h *HostsFile) readLines() ([]string, error) {
 	return lines, nil
 }
 
-func parseLines(lines []string) ([]HostEntry, error) {
+func (h *HostsFile) parseHosts(lines []string) ([]HostEntry, error) {
 	var entries []HostEntry
 
 	for _, line := range lines {
+		originalLine := line // Keep the original line for additional content purposes
 		line = strings.TrimSpace(line)
-		if len(line) == 0 || strings.HasPrefix(line, "#") {
+
+		// Skip empty lines
+		if len(line) == 0 {
 			continue
 		}
 
+		// Identify if the line is a comment and potentially a valid but inactive entry
+		isActive := true
+		if line[0] == '#' {
+			trimmedLine := strings.TrimSpace(line[1:])
+			// If after trimming it looks like a valid entry (has space), and the first field
+			// is a valid IP, then it's an inactive host entry
+			if strings.Contains(trimmedLine, " ") && net.ParseIP(strings.Fields(trimmedLine)[0]) != nil {
+				line = trimmedLine
+				isActive = false
+			} else {
+				// Otherwise, it's just a comment line, add it to the additional content and skip
+				h.AditionalContent += originalLine + "\n"
+				continue
+			}
+		}
+
+		var hostnames []string
+		var comment string
+
+		commentIndex := strings.Index(line, "#")
+		// If there's a comment, separate it from the line
+		if commentIndex != -1 {
+			comment = strings.TrimSpace(line[commentIndex+1:])
+			line = strings.TrimSpace(line[:commentIndex])
+		}
+
 		parts := strings.Fields(line)
-		// TODO: Is this check necessary?
+		// If there's no hostname, skip
 		if len(parts) < 2 {
 			continue
 		}
 
+		// The first part should be the IP address
 		ip := net.ParseIP(parts[0])
 		if ip == nil {
 			continue
 		}
 
-		hostnames := make([]string, 0)
-		comment := ""
-
-		for i := 1; i < len(parts); i++ {
-			if strings.HasPrefix(parts[i], "#") {
-				comment = strings.TrimSpace(strings.TrimPrefix(strings.Join(parts[i:], " "), "#"))
-				break
-			}
-			// TODO: this allows for the possibility of having an empty hostname, check if this is okay
-			if isValidHostname(parts[i]) {
-				hostnames = append(hostnames, parts[i])
-			}
-		}
+		// Finally, the rest of the parts are the hostnames
+		hostnames = parts[1:]
 
 		entry := HostEntry{
-			IP:        ip,
+			IP:        ip.String(),
 			Hostnames: hostnames,
 			Comment:   comment,
+			Active:    isActive,
 		}
 		entries = append(entries, entry)
 	}
 
 	return entries, nil
-}
-
-// parseHostEntry parses a single line from the hosts file and returns a HostEntry.
-func parseHostEntry(line string) (HostEntry, error) {
-	fields := strings.Fields(line)
-	if len(fields) < 2 {
-		return HostEntry{}, fmt.Errorf("invalid host entry: %s", line)
-	}
-
-	ip := net.ParseIP(fields[0])
-	if ip == nil {
-		return HostEntry{}, fmt.Errorf("invalid IP address: %s", fields[0])
-	}
-
-	var hostnames []string
-	var comment string
-	for i := 1; i < len(fields); i++ {
-		if strings.HasPrefix(fields[i], "#") {
-			comment = strings.TrimSpace(strings.Join(fields[i:], " "))
-			break
-		}
-		hostnames = append(hostnames, fields[i])
-	}
-
-	return HostEntry{IP: ip, Hostnames: hostnames, Comment: comment}, nil
 }

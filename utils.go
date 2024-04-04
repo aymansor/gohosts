@@ -2,6 +2,7 @@ package hosts
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 	"runtime"
@@ -47,12 +48,80 @@ func isValidHostname(hostname string) bool {
 	return true
 }
 
-func sameHostnames(a, b []string) bool {
+func copyFile(src, dst string) error {
+	srcFile, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer srcFile.Close()
+
+	dstFile, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer dstFile.Close()
+
+	_, err = io.Copy(dstFile, srcFile)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func contains(slice []string, items ...string) bool {
+	for _, item := range items {
+		found := false
+		for _, s := range slice {
+			if s == item {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+	return true
+}
+
+func removeStrings(slice []string, values ...string) []string {
+	var result []string
+	for _, s := range slice {
+		if !contains(values, s) {
+			result = append(result, s)
+		}
+	}
+	return result
+}
+
+func compareEntrie(a, b HostEntry) bool {
+	if a.IP != b.IP {
+		return false
+	}
+	if len(a.Hostnames) != len(b.Hostnames) {
+		return false
+	}
+	for i := range a.Hostnames {
+		if a.Hostnames[i] != b.Hostnames[i] {
+			return false
+		}
+	}
+	if a.Comment != b.Comment {
+		return false
+	}
+	if a.Active != b.Active {
+		return false
+	}
+
+	return true
+}
+
+func compareEntries(a, b []HostEntry) bool {
 	if len(a) != len(b) {
 		return false
 	}
 	for i := range a {
-		if a[i] != b[i] {
+		if !compareEntrie(a[i], b[i]) {
 			return false
 		}
 	}

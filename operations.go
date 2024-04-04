@@ -1,78 +1,86 @@
 package hosts
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strings"
+	"net"
 )
 
-func (h *HostsFile) AddEntry(host HostEntry) error {
-	if host.IP == nil {
-		return fmt.Errorf("invalid IP address")
+func (h *HostsFile) Add(ip string, hostname []string, comment string) error {
+	if net.ParseIP(ip) == nil {
+		return fmt.Errorf("invalid IP address: %s", ip)
 	}
 
-	for _, hostname := range host.Hostnames {
+	if len(hostname) == 0 {
+		return fmt.Errorf("no hostnames provided")
+	}
+
+	for _, hostname := range hostname {
 		if !isValidHostname(hostname) {
 			return fmt.Errorf("invalid hostname: %s", hostname)
 		}
 	}
 
-	file, err := os.OpenFile(h.path, os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
+	entry := HostEntry{
+		IP:        ip,
+		Hostnames: hostname,
+		Comment:   comment,
+		Active:    true,
 	}
-	defer file.Close()
-
-	entry := fmt.Sprintf("%s %s", host.IP, strings.Join(host.Hostnames, " "))
-	if host.Comment != "" {
-		entry += " #" + host.Comment
-	}
-	_, err = file.WriteString(entry + "\n")
-	return err
+	h.Entries = append(h.Entries, entry)
+	return nil
 }
 
-func (h *HostsFile) RemoveEntry(host HostEntry) error {
-	if host.IP == nil {
-		return fmt.Errorf("invalid IP address")
-	}
-
-	// TODO: find better way
-	lines, err := h.readLines()
-	if err != nil {
-		return err
-	}
-
-	var newLines []string
-	for _, line := range lines {
-		entry, err := parseHostEntry(line)
-		if err != nil {
-			newLines = append(newLines, line)
-			continue
-		}
-
-		if !entry.IP.Equal(host.IP) {
-			newLines = append(newLines, line)
-			continue
-		}
-
-		if !sameHostnames(entry.Hostnames, host.Hostnames) {
-			newLines = append(newLines, line)
-		}
-	}
-
-	file, err := os.Create(h.path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	writer := bufio.NewWriter(file)
-	for _, line := range newLines {
-		_, err := writer.WriteString(line + "\n")
+func (h *HostsFile) AddBatch(entries ...HostEntry) error {
+	for _, entry := range entries {
+		err := h.Add(entry.IP, entry.Hostnames, entry.Comment)
 		if err != nil {
 			return err
 		}
 	}
-	return writer.Flush()
+
+	return nil
+}
+
+func (h *HostsFile) Remove(ip string, hostname []string) error {
+	if net.ParseIP(ip) == nil {
+		return fmt.Errorf("invalid IP address: %s", ip)
+	}
+
+	if len(hostname) == 0 {
+		return fmt.Errorf("no hostnames provided")
+	}
+
+	for _, hostname := range hostname {
+		if !isValidHostname(hostname) {
+			return fmt.Errorf("invalid hostname: %s", hostname)
+		}
+	}
+
+	for i, entry := range h.Entries {
+		if entry.IP == ip && contains(entry.Hostnames, hostname...) {
+			if len(entry.Hostnames) == 1 || len(entry.Hostnames) == len(hostname) {
+				// Remove the entire entry if it's the only hostname
+				h.Entries = append(h.Entries[:i], h.Entries[i+1:]...)
+			} else {
+				// Remove the specific hostname from the entry
+				entry.Hostnames = removeStrings(entry.Hostnames, hostname...)
+				h.Entries[i] = entry
+			}
+
+			return nil
+		}
+	}
+	return fmt.Errorf("host entry not found: IP=%s, Hostname=%s", ip, hostname)
+}
+
+func (h *HostsFile) RemoveBatch(entries ...HostEntry) error {
+	for _, removedEntry := range entries {
+		// TODO: maybe add a comment match as well, I don't know seem useless, who knows
+		err := h.Remove(removedEntry.IP, removedEntry.Hostnames)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
