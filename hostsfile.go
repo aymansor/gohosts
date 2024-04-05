@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// HostEntry represents a single entry in a hosts file.
 type HostEntry struct {
 	IP        string
 	Hostnames []string
@@ -14,20 +15,25 @@ type HostEntry struct {
 	Active    bool
 }
 
+// HostsFile represents a hosts file.
 type HostsFile struct {
 	path             string
 	Entries          []HostEntry
 	AditionalContent string
 }
 
+// HostsOption is a functional option for configuring a HostsFile.
 type HostsOption func(*HostsFile)
 
+// WithPath is a HostsOption that sets the path of the hosts file to be used.
 func WithPath(path string) HostsOption {
 	return func(h *HostsFile) {
 		h.path = path
 	}
 }
 
+// New creates a new HostsFile with the provided options.
+// If no options are provided, the system hosts file is used.
 func New(opts ...HostsOption) (*HostsFile, error) {
 	defaultPath, err := getHostsFileLocation()
 	if err != nil {
@@ -49,6 +55,7 @@ func New(opts ...HostsOption) (*HostsFile, error) {
 	return h, nil
 }
 
+// Load reads the hosts file and parses its content.
 func (h *HostsFile) Load() error {
 	lines, err := h.readHosts()
 	if err != nil {
@@ -65,6 +72,8 @@ func (h *HostsFile) Load() error {
 	return nil
 }
 
+// Save writes the hosts file with the modified content. It creates a backup of the original hosts file
+// before writing the modified content.
 func (h *HostsFile) Save() error {
 	// Before doing anything, create a backup of the hosts file
 	err := h.CreateBackup()

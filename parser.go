@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// readHosts reads the hosts file and returns its content as a slice of strings.
 func (h *HostsFile) readHosts() ([]string, error) {
 	file, err := os.Open(h.path)
 	if err != nil {
@@ -27,6 +28,9 @@ func (h *HostsFile) readHosts() ([]string, error) {
 	return lines, nil
 }
 
+// parseHosts parses the provided lines of the hosts file and returns a slice of HostEntry structs.
+// Each HostEntry struct represents a single entry in the hosts file, containing the IP address,
+// hostnames, comment, and active status.
 func (h *HostsFile) parseHosts(lines []string) ([]HostEntry, error) {
 	var entries []HostEntry
 

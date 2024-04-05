@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// getHostsFileLocation returns the path of the hosts file for the current operating system.
 func getHostsFileLocation() (string, error) {
 	switch runtime.GOOS {
 	case "windows":
@@ -19,6 +20,7 @@ func getHostsFileLocation() (string, error) {
 	}
 }
 
+// isValidPath checks if the provided path is a valid file path.
 func isValidPath(path string) bool {
 	info, err := os.Stat(path)
 	if err != nil {
@@ -30,6 +32,7 @@ func isValidPath(path string) bool {
 	return true
 }
 
+// isValidHostname checks if the provided hostname is a valid domain name.
 func isValidHostname(hostname string) bool {
 	if len(hostname) == 0 || len(hostname) > 255 {
 		return false
@@ -47,6 +50,7 @@ func isValidHostname(hostname string) bool {
 	return true
 }
 
+// contains checks if a slice contains all the provided items.
 func contains(slice []string, items ...string) bool {
 	for _, item := range items {
 		found := false
@@ -63,6 +67,7 @@ func contains(slice []string, items ...string) bool {
 	return true
 }
 
+// removeStrings removes the provided values from the slice.
 func removeStrings(slice []string, values ...string) []string {
 	var result []string
 	for _, s := range slice {
@@ -73,6 +78,7 @@ func removeStrings(slice []string, values ...string) []string {
 	return result
 }
 
+// compareEntrie checks if two HostEntry are equal.
 func compareEntrie(a, b HostEntry) bool {
 	if a.IP != b.IP {
 		return false
@@ -95,6 +101,7 @@ func compareEntrie(a, b HostEntry) bool {
 	return true
 }
 
+// compareEntries checks if two slices of HostEntry are equal.
 func compareEntries(a, b []HostEntry) bool {
 	if len(a) != len(b) {
 		return false

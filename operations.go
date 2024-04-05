@@ -5,6 +5,7 @@ import (
 	"net"
 )
 
+// Add appends a new host entry to the hosts file.
 func (h *HostsFile) Add(ip string, hostname []string, comment string) error {
 	if net.ParseIP(ip) == nil {
 		return fmt.Errorf("invalid IP address: %s", ip)
@@ -30,6 +31,7 @@ func (h *HostsFile) Add(ip string, hostname []string, comment string) error {
 	return nil
 }
 
+// AddBatch appends multiple host entries to the hosts file.
 func (h *HostsFile) AddBatch(entries ...HostEntry) error {
 	for _, entry := range entries {
 		err := h.Add(entry.IP, entry.Hostnames, entry.Comment)
@@ -41,6 +43,7 @@ func (h *HostsFile) AddBatch(entries ...HostEntry) error {
 	return nil
 }
 
+// Remove deletes a host entry from the hosts file.
 func (h *HostsFile) Remove(ip string, hostname []string) error {
 	if net.ParseIP(ip) == nil {
 		return fmt.Errorf("invalid IP address: %s", ip)
@@ -73,6 +76,7 @@ func (h *HostsFile) Remove(ip string, hostname []string) error {
 	return fmt.Errorf("host entry not found: IP=%s, Hostname=%s", ip, hostname)
 }
 
+// RemoveBatch deletes multiple host entries from the hosts file.
 func (h *HostsFile) RemoveBatch(entries ...HostEntry) error {
 	for _, removedEntry := range entries {
 		// TODO: maybe add a comment match as well, I don't know seem useless, who knows
