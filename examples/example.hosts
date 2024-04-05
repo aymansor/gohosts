@@ -1,0 +1,15 @@
+# Additional Comments
+#
+# This is an additional comment
+# Another additional comment
+#
+# And one more
+# Blank Lines
+# Basic Functionality
+192.168.0.1     example.com     # Valid Entries
+10.0.0.1     test.com
+1:2::3:4:5     onetwothre four five     # blah blah blah
+192.168.0.2     host1.com host2.com host3.com     # Multiple Hostnames
+192.168.0.3     whitespace.com     # Leading and Trailing Whitespace
+2001:db8:a0b:12f0::1     anotherexample
+192.168.0.4     inlinecomment.com     # This is an inline comment
