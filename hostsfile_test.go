@@ -142,4 +142,47 @@ func TestSave(t *testing.T) {
 	}
 }
 
+func TestCheckWritePermission(t *testing.T) {
+	tempPath, err := os.CreateTemp("", "hosts")
+	if err != nil {
+		t.Fatalf("failed to create temporary file: %v", err)
+	}
+	defer os.Remove(tempPath.Name())
+	defer tempPath.Close()
+
+	h, err := New(WithPath(tempPath.Name()))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if hasPermission, err := h.CheckWritePermission(); !hasPermission {
+		t.Errorf("expected true, but got false: %v", err)
+	}
+}
+
+func TestCheckWritePermission_NoPermission(t *testing.T) {
+	// TODO: there has to be a better way to creating these temporary files without
+	// having to duplicate the code in every single test, but I don't feel like doing it right now.
+	tempPath, err := os.CreateTemp("", "hosts")
+	if err != nil {
+		t.Fatalf("failed to create temporary file: %v", err)
+	}
+	defer os.Remove(tempPath.Name())
+	defer tempPath.Close()
+
+	err = os.Chmod(tempPath.Name(), 0400)
+	if err != nil {
+		t.Fatalf("failed to change file permission: %v", err)
+	}
+
+	h, err := New(WithPath(tempPath.Name()))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if hasPermission, err := h.CheckWritePermission(); hasPermission {
+		t.Errorf("expected false, but got true: %v", err)
+	}
+}
+
 // TODO: Add more tests for Save method.

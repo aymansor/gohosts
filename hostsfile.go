@@ -75,7 +75,12 @@ func (h *HostsFile) Load() error {
 // Save writes the hosts file with the modified content. It creates a backup of the original hosts file
 // before writing the modified content.
 func (h *HostsFile) Save() error {
-	// Before doing anything, create a backup of the hosts file
+	// Before doing anything check if the user has permission to write to the hosts file
+	if hasPermission, err := h.CheckWritePermission(); !hasPermission {
+		return fmt.Errorf("no write permission to hosts file: %v", err)
+	}
+
+	// Before modfying the hosts file create a backup of it
 	err := h.CreateBackup()
 	if err != nil {
 		return fmt.Errorf("failed to create backup: %v", err)
@@ -131,4 +136,20 @@ func (h *HostsFile) Save() error {
 	}
 
 	return nil
+}
+
+// CheckWritePermission checks if the user has permission to write to the hosts file.
+// This function is called inside the Save method before writing to the hosts file.
+// You can call this method if you want to check if the user has permission to write to
+// the hosts file. For example, to show the user the avlaible options. If the user does
+// not have permission to write to the hosts file, you can show a message to the user
+// to run the program as an administrator.
+func (h *HostsFile) CheckWritePermission() (bool, error) {
+	file, err := os.OpenFile(h.path, os.O_WRONLY, 0644)
+	if err != nil {
+		return false, err
+	}
+	defer file.Close()
+
+	return true, nil
 }
