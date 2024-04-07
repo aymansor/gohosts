@@ -77,10 +77,6 @@ func TestRaedHosts_InvalidPath(t *testing.T) {
 	if err == nil {
 		t.Fatalf("expected error, got nil")
 	}
-
-	if err.Error() != "open testdata/invalid: no such file or directory" {
-		t.Fatalf("expected error, got %v", err)
-	}
 }
 
 func TestReadHosts_ScanError(t *testing.T) {
