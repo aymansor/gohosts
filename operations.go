@@ -32,7 +32,7 @@ func (h *HostsFile) Add(ip string, hostname []string, comment string) error {
 }
 
 // AddBatch appends multiple host entries to the hosts file.
-func (h *HostsFile) AddBatch(entries ...HostEntry) error {
+func (h *HostsFile) AddBatch(entries []HostEntry) error {
 	for _, entry := range entries {
 		err := h.Add(entry.IP, entry.Hostnames, entry.Comment)
 		if err != nil {
@@ -77,7 +77,7 @@ func (h *HostsFile) Remove(ip string, hostname []string) error {
 }
 
 // RemoveBatch deletes multiple host entries from the hosts file.
-func (h *HostsFile) RemoveBatch(entries ...HostEntry) error {
+func (h *HostsFile) RemoveBatch(entries []HostEntry) error {
 	for _, removedEntry := range entries {
 		// TODO: maybe add a comment match as well, I don't know seem useless, who knows
 		err := h.Remove(removedEntry.IP, removedEntry.Hostnames)

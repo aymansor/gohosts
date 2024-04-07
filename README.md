@@ -54,10 +54,10 @@ func main() {
     }
 
     // Add multiple hosts
-    err = hosts.AddBatch(
-        gohosts.HostEntry{IP: "192.168.0.1", Hostnames: []string{"host1.com", "host2.com"}},
-        gohosts.HostEntry{IP: "192.168.0.2", Hostnames: []string{"router"}, Comment: "wow"},
-    )
+    err = hosts.AddBatch([]gohosts.HostEntry{
+      {IP: "192.168.0.1", Hostnames: []string{"host1.com", "host2.com"}},
+      {IP: "192.168.0.2", Hostnames: []string{"router"}, Comment: "wow"},
+    })
     if err != nil {
         panic(err)
     }
@@ -69,10 +69,10 @@ func main() {
     }
 
     // Remove multiple hosts
-    err = hosts.RemoveBatch(
-        gohosts.HostEntry{IP: "192.168.0.1", Hostnames: []string{"host1.com", "host2.com"}},
-        gohosts.HostEntry{IP: "192.168.0.2", Hostnames: []string{"router"}, Comment: "wow"},
-    )
+    err = hosts.RemoveBatch([]gohosts.HostEntry{
+      {IP: "192.168.0.1", Hostnames: []string{"host1.com", "host2.com"}},
+      {IP: "192.168.0.2", Hostnames: []string{"router"}, Comment: "wow"},
+    })
     if err != nil {
         panic(err)
     }

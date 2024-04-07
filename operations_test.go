@@ -59,7 +59,7 @@ func TestAddBatch(t *testing.T) {
 		{IP: "127.0.0.1", Hostnames: []string{"localhost"}, Comment: "Entry 1"},
 		{IP: "192.168.0.1", Hostnames: []string{"router"}, Comment: "Entry 2"},
 	}
-	err = h.AddBatch(entries...)
+	err = h.AddBatch(entries)
 	if err != nil {
 		t.Errorf("Error adding multiple valid entries: %v", err)
 	}
@@ -68,7 +68,7 @@ func TestAddBatch(t *testing.T) {
 	invalidEntries := []HostEntry{
 		{IP: "invalid_ip", Hostnames: []string{"localhost"}, Comment: ""},
 	}
-	err = h.AddBatch(invalidEntries...)
+	err = h.AddBatch(invalidEntries)
 	if err == nil {
 		t.Error("Expected an error for entry with an invalid IP address")
 	}
@@ -165,7 +165,7 @@ func TestRemoveBatch(t *testing.T) {
 		{IP: "127.0.0.1", Hostnames: []string{"local"}},
 		{IP: "192.168.0.1", Hostnames: []string{"router"}},
 	}
-	err = h.RemoveBatch(entriesToRemove...)
+	err = h.RemoveBatch(entriesToRemove)
 	if err != nil {
 		t.Errorf("Error removing multiple entries: %v", err)
 	}
@@ -174,7 +174,7 @@ func TestRemoveBatch(t *testing.T) {
 	invalidEntriesToRemove := []HostEntry{
 		{IP: "invalid_ip", Hostnames: []string{"localhost"}},
 	}
-	err = h.RemoveBatch(invalidEntriesToRemove...)
+	err = h.RemoveBatch(invalidEntriesToRemove)
 	if err == nil {
 		t.Error("Expected an error for removing an entry with an invalid IP address")
 	}
